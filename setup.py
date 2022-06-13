@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.1.6'
+version = '0.1.7'
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
@@ -17,4 +17,5 @@ setup(
     url='https://github.com/Ms-company-BombSquad/ms-launcher',
     download_url=f'https://github.com/Ms-company-BombSquad/ms-launcher/archive/v{version}.zip',
     packages=find_packages(),
+    package_data={'ms_launcher': ['data/languages/*.json']},
 )
