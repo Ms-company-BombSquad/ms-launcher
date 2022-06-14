@@ -4,7 +4,7 @@ import ba
 
 
 languages = {}
-LANGUAGES_DIR = ba.app.python_directory_user + 'ms_launcher/data/languages/'
+LANGUAGES_DIR = ba.app.python_directory_user + '/ms_launcher/data/languages/'
 
 
 def gettext(key: str, *args, **kwargs) -> str:
