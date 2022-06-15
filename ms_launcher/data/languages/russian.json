@@ -1,6 +1,7 @@
 {
   "Ms launcher v{version} has been installed successfully!": "Ms launcher v{version} успешно установлен!",
-  "Ms launcher updated to version {version}": "Ms launcher обновлен до версии {version}",
+  "Ms launcher updated to version {version}; restart the game": "Ms launcher обновлен до версии {version}; перезапустите игру",
   "You can disable auto-updates in the settings": "Вы можете отключить авто-обновления в настройках",
-  "New Ms launcher update is available (v{version})": "Доступно новое обновление Ms launcher (v{version})"
+  "New Ms launcher update is available (v{version})": "Доступно новое обновление Ms launcher (v{version})",
+  "Verified servers": "Проверенные сервера"
 }
