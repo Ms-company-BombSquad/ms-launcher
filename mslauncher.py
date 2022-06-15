@@ -101,7 +101,7 @@ def check_installation() -> None:
                     capture_output=True
                 )
                 ba.app.config['ms-launcher']['last-update'] = time.time()
-                ba.app.config.apply_and_commit()
+                ba.pushcall(ba.Call(ba.app.config.apply_and_commit, from_other_thread=True))
                 ba.pushcall(ba.Call(
                     ba.screenmessage,
                     (
