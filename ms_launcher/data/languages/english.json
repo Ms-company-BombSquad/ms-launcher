@@ -3,5 +3,8 @@
   "Ms launcher updated to version {version}; restart the game": "Ms launcher updated to version {version}; restart the game",
   "You can disable auto-updates in the settings": "You can disable auto-updates in the settings",
   "New Ms launcher update is available (v{version})": "New Ms launcher update is available (v{version})",
-  "Verified servers": "Verified servers"
+  "Verified servers": "Verified servers",
+  "Auto update": "Auto update",
+  "Last updated on: {date}": "Last updated on: {date}",
+  "Version: {version}": "Version: {version}"
 }

@@ -7,7 +7,9 @@ import ba
 from bastd.ui.partyqueue import PartyQueueWindow
 from bastd.ui.gather.publictab import PublicGatherTab, PartyEntry
 
+from ms_launcher.ui.launcher import LauncherWindow
 from ms_launcher.tools.translation import gettext as _
+
 
 # pylint: disable=access-member-before-definition,attribute-defined-outside-init
 
@@ -31,7 +33,7 @@ class OurPublicGatherTab(PublicGatherTab):  # pylint: disable=too-few-public-met
         self._filter_text = ba.textwidget(parent=self._container,
                                           text=self._filter_value,
                                           size=(350, 45),
-                                          position=(290-100, vertical - 10),
+                                          position=(290 - 100, vertical - 10),
                                           h_align='left',
                                           v_align='center',
                                           editable=True,
@@ -40,7 +42,7 @@ class OurPublicGatherTab(PublicGatherTab):  # pylint: disable=too-few-public-met
         ba.textwidget(text=filter_txt,
                       parent=self._container,
                       size=(0, 0),
-                      position=(270-100, vertical + 13),
+                      position=(270 - 100, vertical + 13),
                       maxwidth=150,
                       scale=0.8,
                       color=(0.5, 0.46, 0.5),
@@ -49,13 +51,23 @@ class OurPublicGatherTab(PublicGatherTab):  # pylint: disable=too-few-public-met
                       v_align='center')
         ba.checkboxwidget(parent=self._container,
                           size=(50, 50),
-                          position=(290-100 + 350 + 30, vertical - 10),
+                          position=(570, vertical - 10),
                           text=_('Verified servers'),
                           value=ba.app.config['ms-launcher'].get('only-verified-servers', True),
                           on_value_change_call=self.change_verified_servers_setting,
                           text_scale=0.8,
                           textcolor=(.93, .93, .93, .6),
                           color=(0.5, 0.5, 0.7))
+        ba.buttonwidget(parent=self._container,
+                        position=(830, vertical + 40),
+                        size=(50, 50),
+                        color=(0.5, 0.5, 0.7),
+                        textcolor=(.93, .93, .93, .8),
+                        scale=0.8,
+                        autoselect=True,
+                        iconscale=1.2,
+                        label='MsL',
+                        on_activate_call=self._on_ms_launcher_press)
 
         ba.textwidget(text=ba.Lstr(resource='nameText'),
                       parent=self._container,
@@ -198,3 +210,8 @@ class OurPublicGatherTab(PublicGatherTab):  # pylint: disable=too-few-public-met
                 _ba.run_transactions()
             else:
                 self._on_public_party_query_result(None)
+
+    def _on_ms_launcher_press(self) -> None:
+        """Called when ms launcher button is pressed."""
+
+        LauncherWindow(transition='in_right')

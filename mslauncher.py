@@ -1,7 +1,7 @@
-import os
+import datetime
 import platform
 import subprocess
-import sys
+import time
 from threading import Thread
 
 import ba
@@ -21,6 +21,12 @@ def get_python_version() -> str:
         return '3.7'
 
 
+def get_current_date() -> str:
+    """Return current date, in format ""."""
+
+    return datetime.datetime.now().strftime("%d.%m.%Y")
+
+
 def get_python_bin() -> str:
     """Return python bin."""
 
@@ -35,6 +41,7 @@ def check_config() -> None:
         ba.app.config['ms-launcher'] = {
             'auto-update': True,
             'only-verified-servers': True,
+            'last-update': time.time()
         }
         ba.app.config.apply_and_commit()
 
@@ -93,6 +100,8 @@ def check_installation() -> None:
                      '--no-cache-dir', f'--target={bs_libs}'],
                     capture_output=True
                 )
+                ba.app.config['ms-launcher']['last-update'] = time.time()
+                ba.app.config.apply_and_commit()
                 ba.pushcall(ba.Call(
                     ba.screenmessage,
                     (
