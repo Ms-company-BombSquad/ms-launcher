@@ -41,7 +41,7 @@ def check_config() -> None:
         ba.app.config['ms-launcher'] = {
             'auto-update': True,
             'only-verified-servers': True,
-            'last-update': time.time()
+            'last-update': get_current_date()
         }
         ba.app.config.apply_and_commit()
 
@@ -100,8 +100,8 @@ def check_installation() -> None:
                      '--no-cache-dir', f'--target={bs_libs}'],
                     capture_output=True
                 )
-                ba.app.config['ms-launcher']['last-update'] = time.time()
-                ba.pushcall(ba.Call(ba.app.config.apply_and_commit, from_other_thread=True))
+                ba.app.config['ms-launcher']['last-update'] = get_current_date()
+                ba.pushcall(ba.Call(ba.app.config.apply_and_commit), from_other_thread=True)
                 ba.pushcall(ba.Call(
                     ba.screenmessage,
                     (
