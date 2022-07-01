@@ -77,30 +77,19 @@ def install_from_release(latest_release: dict) -> Union[str, None]:
 
     zip_url = latest_release['zipball_url']
     with zipfile.ZipFile(io.BytesIO(get(zip_url).content)) as _zip:
-        print('We are in install_from_release on with zipfile')
         clear_dir(DATA_DIR)
-        print('cleared data from .ms_data')
         _zip.extractall(DATA_DIR)
-        print('zip extracted')
         project_path = os.path.join(DATA_DIR, os.listdir(DATA_DIR)[0])
-        print(f'project path: {project_path}')
         dir_path = os.path.join(project_path, REPO_DIR)
-        print(f'dir path: {dir_path}')
         if not os.path.exists(dir_path):
-            print(f'Path "{dir_path}" does not exists')
             return
         dst_path = os.path.join(REPO_DIR_PATH, REPO_DIR)
-        print(f'dst path: {dst_path}')
         clear_dir(dst_path)
-        print(f'dst path cleared')
         shutil.copytree(dir_path, dst_path, dirs_exist_ok=True)
-        print(f'shutil.copytree from {dir_path} to {dst_path}')
 
-    print('editing config')
     ba.app.config['ms-launcher']['version'] = latest_release['tag_name']
     ba.app.config['ms-launcher']['last-update'] = get_current_date()
     ba.pushcall(ba.Call(ba.app.config.apply_and_commit), from_other_thread=True)
-    print(f'config commit; return {latest_release["tag_name"]}')
 
     return latest_release['tag_name']
 
@@ -150,7 +139,6 @@ def activate_launcher() -> None:
     import ms_launcher
     from ms_launcher.activate import activate
     activate()
-    print(f'MS Launcher v{get_version()} has been successfully activated; enjoy')
 
 
 def pushcall_screenmessage(*args, **kwargs) -> None:
