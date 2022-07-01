@@ -3,7 +3,7 @@ Plugin for game [BombSquad](https://github.com/efroemling/ballistica ),
 filters the list of servers, showing only verified servers (can be disabled)
 and simplifies & speeds up the connection to them.
 
-[English]() | [Русский](https://github.com/Ms-company-BombSquad/docs/README.ru.md)
+[English]() | [Русский](https://github.com/Ms-company-BombSquad/ms-launcher/blob/main/docs/README.ru.md)
 
 ![](https://github.com/Ms-company-BombSquad/ms-launcher/actions/workflows/pylint.yml/badge.svg )
 ## Additional functionality:
