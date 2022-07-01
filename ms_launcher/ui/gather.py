@@ -9,6 +9,7 @@ from bastd.ui.gather.publictab import PublicGatherTab, PartyEntry
 from bastd.ui.partyqueue import PartyQueueWindow
 
 from ms_launcher.tools.translation import gettext as _
+from ms_launcher.tools.servers import get_verified_servers
 from ms_launcher.ui.launcher import LauncherWindow
 
 
@@ -163,29 +164,34 @@ class OurPublicGatherTab(PublicGatherTab):  # pylint: disable=too-few-public-met
         if not ba.app.config['ms-launcher'].get('only-verified-servers', True):
             return super()._on_public_party_query_result(result)
 
-        # Ms servers ips
-        verified_servers = {
-            '89.108.88.73': {},
-            '89.108.81.209': {},
-            '194.67.121.232': {},
-        }
+        verified_servers = get_verified_servers()
 
         parties_in = result['l']
         filtered_parties_in = []
         for party_in in parties_in:
             party_ip = party_in['a']
-            if party_ip in verified_servers:
-                if not verified_servers[party_ip]:
-                    # Allow any server on this ip
-                    filtered_parties_in.append(party_in)
-                    continue
+            if party_ip not in verified_servers:
+                continue
 
-                port = verified_servers[party_ip].get('port')
-                name = verified_servers[party_ip].get('name')
+            verified_server = verified_servers[party_ip]
+            if not verified_server:
+                # Allow any server on this ip
+                filtered_parties_in.append(party_in)
+                continue
 
-                if party_in['p'] == port or not port:
-                    if party_in['n'] == name or not name:
-                        filtered_parties_in.append(party_in)
+            if not isinstance(verified_server, list):
+                verified_server = [verified_server]
+
+            for server in verified_server:
+                port = server.get('port')
+                name = server.get('name')
+                group = server.get('group')
+
+                if not port or party_in['p'] == port:
+                    if not name or party_in['n'] == name:
+                        if not group or group.lower() in party_in['n'].lower():
+                            filtered_parties_in.append(party_in)
+                            break
 
         return super()._on_public_party_query_result({'l': filtered_parties_in})
 

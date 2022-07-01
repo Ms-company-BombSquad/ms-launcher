@@ -17,7 +17,7 @@ and simplifies & speeds up the connection to them.
     getting a list of servers from our web server, and in the meantime will update the list regularly
     in the repository.
     > If you are the owner of the server and want your server to be included in the list — write to us
-    ivanms.ept@gmail.com
+    ivanms.ept@gmail.com. Or you can create a PR where describe your server.
 - Why do we need server filtering?
   - A lot of fake copies of the original servers have appeared on the network, which make it very difficult
     access to the original servers. Fake servers can be used by attackers
