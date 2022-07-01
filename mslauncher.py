@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import ssl
 import io
 import json
 import os
@@ -42,7 +43,13 @@ def get(url) -> Response:
     Its best to use requests here, but requests not in BombSquad libs.
     """
 
-    with urllib.request.urlopen(url) as res:
+    context = {}
+    if ba.app.platform == 'android':
+        if ba.app.build_number < 20461:
+            # Android builds below 1002 do not support SSL
+            context = {'context': ssl.SSLContext()}
+
+    with urllib.request.urlopen(url, **context) as res:
         return Response(res.read())
 
 
