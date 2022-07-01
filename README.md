@@ -1,26 +1,28 @@
 # Ms Launcher
-Плагин для игры [BombSquad](https://github.com/efroemling/ballistica),
-фильтрует список серверов, показывая только проверенные сервера (можно отключить)
-и упрощает & ускоряет подключение к ним.
+Plugin for game [BombSquad](https://github.com/efroemling/ballistica ),
+filters the list of servers, showing only verified servers (can be disabled)
+and simplifies & speeds up the connection to them.
 
-![](https://github.com/Ms-company-BombSquad/ms-launcher/actions/workflows/pylint.yml/badge.svg)
-## Дополнительный функционал:
-- Автообновление (можно отключить в настройках)
-- Локализация под английский и русский языки
+[English]() | [Русский](https://github.com/Ms-company-BombSquad/docs/README.ru.md)
+
+![](https://github.com/Ms-company-BombSquad/ms-launcher/actions/workflows/pylint.yml/badge.svg )
+## Additional functionality:
+- Auto-update (can be disabled in the settings)
+- Localization for English and Russian languages
 
 ## FAQ
-- Откуда плагин получает список проверенных серверов?
-  - В данный момент репозиторий хранит список проверенных `ip` и плагин просто проверяет
-    если ли `ip` конкретного сервера в этом списке. Чуть позже мы надеемся реализовать
-    получения списка серверов с нашего веб-сервера, а пока будет регулярно обновлять список
-    в репозитории.
-    > Если Вы являетесь владельцем сервера и хотите чтобы Ваш сервер попал в список — напишите нам
-      ivanms.ept@gmail.com
-- Зачем нужна фильтрация серверов?
-  - В сети появилось множество поддельных копий оригинальных серверов, которые сильно затрудняют
-    доступ к оригинальным серверам. Поддельные сервера могут использоваться злоумышленниками
-    для сбора Ваших данных.
-- Как плагину получается ускорять подключение к серверам?
-  - Отключение очереди. При нажатии на сервер плагин тут же пытается подключиться, в отличие от
-    стандартного BombSquad, который сначала запрашивает список игроков в очереди и только если
-    очередь пуста — пытается подключиться.
+- Where does the plugin get the list of verified servers from?
+  - At the moment, the repository stores a list of verified `ip` and plugin just checks
+    if the `ip` of a particular server is in this list. A little later we hope to implement
+    getting a list of servers from our web server, and in the meantime will update the list regularly
+    in the repository.
+    > If you are the owner of the server and want your server to be included in the list — write to us
+    ivanms.ept@gmail.com
+- Why do we need server filtering?
+  - A lot of fake copies of the original servers have appeared on the network, which make it very difficult
+    access to the original servers. Fake servers can be used by attackers
+    to collect your data.
+- How does the plugin speed up connection to servers?
+  - Disabling the queue. When you click on the server, the plugin immediately tries to connect, unlike
+    the standard BombSquad, which first requests a list of players in the queue and only if
+    the queue is empty — trying to connect.
