@@ -2,23 +2,113 @@ import datetime
 import platform
 import subprocess
 import time
+import io
+import json
+import os
+import urllib.request
+import shutil
+import zipfile
 from threading import Thread
+from typing import Optional, Union
 
 import ba
 
 
-def get_python_version() -> str:
-    """Return python version for BombSquad build."""
+APP_DIR = ba.app.python_directory_user
+DATA_DIR = os.path.join(APP_DIR, '.ms_data')
+BASE_URL = f'https://api.github.com/repos/Ms-company-BombSquad/ms-launcher/'
+REPO_DIR = 'ms_launcher'
+REPO_DIR_PATH = APP_DIR
 
-    build_num = ba.app.build_number
-    if build_num >= 20591:
-        return '3.10'
-    elif build_num >= 20394:
-        return '3.9'
-    elif build_num >= 20163:
-        return '3.8'
-    else:
-        return '3.7'
+if not os.path.exists(DATA_DIR):
+    os.mkdir(DATA_DIR)
+
+
+class Response:
+    """Response for urllib"""
+
+    def __init__(self, data) -> None:
+        self.content = data
+
+    def json(self) -> Optional[dict]:
+        """JSON parse content and returns it."""
+        try:
+            return json.loads(self.content)
+        except ValueError:
+            return {}
+
+
+def get(url) -> Response:
+    """Send request to url and returns answer in Response instance.
+    Its best to use requests here, but requests not in BombSquad libs.
+    """
+
+    with urllib.request.urlopen(url) as res:
+        return Response(res.read())
+
+
+def get_latest_release() -> dict:
+    """Using github API will return latest release dict."""
+
+    releases = get(BASE_URL + 'releases').json()
+    return max(releases, key=lambda r: datetime.datetime.strptime(r['published_at'], '%Y-%m-%dT%H:%M:%SZ'))
+
+
+def check_update_available(latest_release: dict, current_version: str = None) -> bool:
+    """Check releases for new update,
+    return boolean (update available?).
+    """
+
+    if current_version is not None and latest_release['tag_name'] == current_version:
+        return False
+    return True
+
+
+def install_from_release(latest_release: dict) -> Union[str, None]:
+    """Check releases and update launcher if it need.
+    Returns lasted release tag name.
+    """
+
+    zip_url = latest_release['zipball_url']
+    with zipfile.ZipFile(io.BytesIO(get(zip_url).content)) as _zip:
+        print('We are in install_from_release on with zipfile')
+        clear_dir(DATA_DIR)
+        print('cleared data from .ms_data')
+        _zip.extractall(DATA_DIR)
+        print('zip extracted')
+        project_path = os.path.join(DATA_DIR, os.listdir(DATA_DIR)[0])
+        print(f'project path: {project_path}')
+        dir_path = os.path.join(project_path, REPO_DIR)
+        print(f'dir path: {dir_path}')
+        if not os.path.exists(dir_path):
+            print(f'Path "{dir_path}" does not exists')
+            return
+        dst_path = os.path.join(REPO_DIR_PATH, REPO_DIR)
+        print(f'dst path: {dst_path}')
+        clear_dir(dst_path)
+        print(f'dst path cleared')
+        shutil.copytree(dir_path, dst_path, dirs_exist_ok=True)
+        print(f'shutil.copytree from {dir_path} to {dst_path}')
+
+    print('editing config')
+    ba.app.config['ms-launcher']['version'] = latest_release['tag_name']
+    ba.app.config['ms-launcher']['last-update'] = get_current_date()
+    ba.pushcall(ba.Call(ba.app.config.apply_and_commit), from_other_thread=True)
+    print(f'config commit; return {latest_release["tag_name"]}')
+
+    return latest_release['tag_name']
+
+
+def clear_dir(path) -> bool:
+    """Clear dir.
+    Returns boolean (is cleared?)
+    """
+
+    if os.path.exists(path):
+        shutil.rmtree(path)
+        os.mkdir(path)
+        return True
+    return False
 
 
 def get_current_date() -> str:
@@ -27,11 +117,12 @@ def get_current_date() -> str:
     return datetime.datetime.now().strftime("%d.%m.%Y")
 
 
-def get_python_bin() -> str:
-    """Return python bin."""
+def get_version() -> Optional[str]:
+    """Get current version"""
 
-    python_version = get_python_version()
-    return f'python{python_version}' if platform.system() != 'Windows' else 'python'
+    if 'ms-launcher' not in ba.app.config:
+        return
+    return ba.app.config['ms-launcher']['version']
 
 
 def check_config() -> None:
@@ -41,6 +132,7 @@ def check_config() -> None:
         ba.app.config['ms-launcher'] = {
             'auto-update': True,
             'only-verified-servers': True,
+            'version': None,
             'last-update': get_current_date()
         }
         ba.app.config.apply_and_commit()
@@ -52,7 +144,13 @@ def activate_launcher() -> None:
     import ms_launcher
     from ms_launcher.activate import activate
     activate()
-    print(f'MS Launcher v{ms_launcher.__version__} has been successfully activated; enjoy')
+    print(f'MS Launcher v{get_version()} has been successfully activated; enjoy')
+
+
+def pushcall_screenmessage(*args, **kwargs) -> None:
+    """Using ba.pushcall will call ba.screenmessage"""
+
+    ba.pushcall(ba.Call(ba.screenmessage, *args, **kwargs), from_other_thread=True)
 
 
 def check_installation() -> None:
@@ -63,61 +161,40 @@ def check_installation() -> None:
     """
 
     check_config()
-    bs_libs = ba.app.python_directory_user
-    python_bin = get_python_bin()
 
     try:
         import ms_launcher
         ba.pushcall(activate_launcher, from_other_thread=True)
     except ImportError:
-        result = subprocess.run(
-            [python_bin, '-m', 'pip', 'install', 'ms-launcher', '--no-cache-dir', f'--target={bs_libs}'],
-            check=True,
-            capture_output=True).stdout.decode().strip().lower()
+        install_from_release(get_latest_release())
 
         import ms_launcher
         from ms_launcher.tools.translation import gettext as _
-        ba.pushcall(ba.Call(
-            ba.screenmessage,
-            _('Ms launcher v{version} has been installed successfully!', version=ms_launcher.__version__),
-            color=(.13, .98, 1.3)
-            ), from_other_thread=True
+        pushcall_screenmessage(
+            _('Ms launcher v{version} has been installed successfully!', version=get_version()),
+            color=(.13, .98, .13)
         )
         ba.pushcall(activate_launcher, from_other_thread=True)
     else:
         from ms_launcher.tools.translation import gettext as _
-        check_version = subprocess.run(
-            [python_bin, '-m', 'pip', 'index', 'versions', 'ms-launcher'],
-            check=True,
-            capture_output=True).stdout.decode().strip().lower().splitlines()
-        last_version = [line for line in check_version if 'latest' in line][0].split(':')[-1].strip()
-
-        if ms_launcher.__version__ != last_version:
+        latest_release = get_latest_release()
+        update_available = check_update_available(latest_release, get_version())
+        if update_available:
             if ba.app.config['ms-launcher']['auto-update']:
-                subprocess.run(
-                    [python_bin, '-m', 'pip',
-                     'install', 'ms-launcher', '--upgrade',
-                     '--no-cache-dir', f'--target={bs_libs}'],
-                    capture_output=True
-                )
-                ba.app.config['ms-launcher']['last-update'] = get_current_date()
-                ba.pushcall(ba.Call(ba.app.config.apply_and_commit), from_other_thread=True)
-                ba.pushcall(ba.Call(
-                    ba.screenmessage,
+                install_from_release(latest_release)
+                pushcall_screenmessage(
                     (
-                        _('Ms launcher updated to version {version}; restart the game', version=last_version) + '\n' +
+                        _('Ms launcher updated to version {version}; restart the game',
+                          version=latest_release['tag_name']) + '\n' +
                         _('You can disable auto-updates in the settings')
                     ),
-                    color=(.13, .98, 1.3)
-                    ), from_other_thread=True
+                    color=(.13, .98, .13)
                 )
             else:
                 # FIXME: Open ui window, instead of use screenmessage
-                ba.pushcall(ba.Call(
-                    ba.screenmessage,
-                    _('New Ms launcher update is available (v{version})', version=last_version),
-                    color=(.13, .98, 1.3)
-                    ), from_other_thread=True
+                pushcall_screenmessage(
+                    _('New Ms launcher update is available (v{version})', version=latest_release['tag_name']),
+                    color=(.13, .98, .13)
                 )
 
 

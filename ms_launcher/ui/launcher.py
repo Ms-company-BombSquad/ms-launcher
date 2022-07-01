@@ -1,6 +1,5 @@
 import ba
 
-from ms_launcher import __version__
 from ms_launcher.tools.translation import gettext as _
 
 
@@ -59,7 +58,7 @@ class LauncherWindow(ba.Window):  # pylint: disable=too-few-public-methods
                       position=(20, 0),
                       size=(200, 20),
                       h_align='left',
-                      text=_("Version: {version}", version=__version__),
+                      text=_("Version: {version}", version=ba.app.config['ms-launcher']['version']),
                       color=(1, 1, 1))
         last_update = ba.app.config['ms-launcher'].get('last-update', '-')
         ba.textwidget(parent=self._subcontainer,
