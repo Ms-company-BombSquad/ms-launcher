@@ -3,7 +3,7 @@
 фильтрует список серверов, показывая только проверенные сервера (можно отключить)
 и упрощает & ускоряет подключение к ним.
 
-[English](https://github.com/Ms-company-BombSquad/README.md) | [Русский]()
+[English](https://github.com/Ms-company-BombSquad/ms-launcher/blob/main/README.md) | [Русский]()
 
 ![](https://github.com/Ms-company-BombSquad/ms-launcher/actions/workflows/pylint.yml/badge.svg)
 ## Дополнительный функционал:
