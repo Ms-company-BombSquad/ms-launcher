@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import bastd
 
 from ms_launcher.ui.gather import OurPublicGatherTab

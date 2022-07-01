@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import ba
 
 from ms_launcher.tools.translation import gettext as _

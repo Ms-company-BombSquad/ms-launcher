@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import time
 from typing import Optional
 
 import _ba
 import ba
-
-from bastd.ui.partyqueue import PartyQueueWindow
 from bastd.ui.gather.publictab import PublicGatherTab, PartyEntry
+from bastd.ui.partyqueue import PartyQueueWindow
 
-from ms_launcher.ui.launcher import LauncherWindow
 from ms_launcher.tools.translation import gettext as _
+from ms_launcher.ui.launcher import LauncherWindow
 
 
 # pylint: disable=access-member-before-definition,attribute-defined-outside-init
