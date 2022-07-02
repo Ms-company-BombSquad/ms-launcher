@@ -19,6 +19,9 @@ DATA_DIR = os.path.join(APP_DIR, '.ms_data')
 BASE_URL = f'https://api.github.com/repos/Ms-company-BombSquad/ms-launcher/'
 REPO_DIR = 'ms_launcher'
 REPO_DIR_PATH = APP_DIR
+PLUGIN_FILE_NAME = 'mslauncher.py'
+PLUGIN_FILE = os.path.join(APP_DIR, PLUGIN_FILE_NAME)
+BACKUP_PLUGIN_FILE = os.path.join(APP_DIR, 'mslauncher.backup')
 
 if not os.path.exists(DATA_DIR):
     os.mkdir(DATA_DIR)
@@ -86,12 +89,45 @@ def install_from_release(latest_release: dict) -> Union[str, None]:
         dst_path = os.path.join(REPO_DIR_PATH, REPO_DIR)
         clear_dir(dst_path)
         shutil.copytree(dir_path, dst_path, dirs_exist_ok=True)
+        new_plugin_path = os.path.join(project_path, PLUGIN_FILE_NAME)
+        shutil.copyfile(PLUGIN_FILE, BACKUP_PLUGIN_FILE)
+        shutil.copyfile(new_plugin_path, PLUGIN_FILE)
 
     ba.app.config['ms-launcher']['version'] = latest_release['tag_name']
     ba.app.config['ms-launcher']['last-update'] = get_current_date()
     ba.pushcall(ba.Call(ba.app.config.apply_and_commit), from_other_thread=True)
 
     return latest_release['tag_name']
+
+
+def rollback_plugin() -> None:
+    """Function for rollback plugin update to exists backup.
+    I hope it will never be called :3
+    """
+
+    try:
+        from ms_launcher.tools.translation import gettext as _
+    except ImportError:
+        _ = lambda text, **kwargs: text.format(**kwargs)
+
+    print(_('Some error occurred; rollback to backup'))
+
+    shutil.copyfile(BACKUP_PLUGIN_FILE, PLUGIN_FILE)
+
+
+def rollback_on_error(func: callable) -> callable:
+    """Rollback plugin on error, this is decorator."""
+
+    def wrapper(*args, **kwargs) -> any:
+        try:
+            result = func(*args, **kwargs)
+        except:
+            import traceback
+            traceback.print_exc()
+            return rollback_plugin()
+        return result
+
+    return wrapper
 
 
 def clear_dir(path) -> bool:
@@ -147,6 +183,7 @@ def pushcall_screenmessage(*args, **kwargs) -> None:
     ba.pushcall(ba.Call(ba.screenmessage, *args, **kwargs), from_other_thread=True)
 
 
+@rollback_on_error
 def check_installation() -> None:
     """Check launcher installation exists.
 
@@ -195,6 +232,7 @@ def check_installation() -> None:
 # ba_meta require api 6
 # ba_meta export plugin
 class Plugin(ba.Plugin):
+    @rollback_on_error
     def on_app_launch(self) -> None:
         thread = Thread(target=check_installation)
         thread.start()

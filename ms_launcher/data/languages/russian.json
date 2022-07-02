@@ -6,5 +6,6 @@
   "Verified servers": "Проверенные сервера",
   "Auto update": "Автообновление",
   "Last updated on: {date}": "Последнее обновление: {date}",
-  "Version: {version}": "Версия: {version}"
+  "Version: {version}": "Версия: {version}",
+  "Some error occurred; rollback to backup": "Произошла ошибка; откат к резервной копии"
 }

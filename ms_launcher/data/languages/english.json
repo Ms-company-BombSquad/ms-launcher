@@ -6,5 +6,6 @@
   "Verified servers": "Verified servers",
   "Auto update": "Auto update",
   "Last updated on: {date}": "Last updated on: {date}",
-  "Version: {version}": "Version: {version}"
+  "Version: {version}": "Version: {version}",
+  "Some error occurred; rollback to backup": "Some error occurred; rollback to backup"
 }
