@@ -8,7 +8,7 @@ import os
 import urllib.request
 import shutil
 import zipfile
-from threading import Thread
+import threading
 from typing import Optional, Union
 
 import ba
@@ -110,7 +110,9 @@ def rollback_plugin() -> None:
     except ImportError:
         _ = lambda text, **kwargs: text.format(**kwargs)
 
-    print(_('Some error occurred; rollback to backup'))
+    txt = _('Some error occurred; rollback to backup')
+    print(txt)
+    pushcall_screenmessage(txt, color=(.93, .13, .13))
 
     shutil.copyfile(BACKUP_PLUGIN_FILE, PLUGIN_FILE)
 
@@ -180,7 +182,8 @@ def activate_launcher() -> None:
 def pushcall_screenmessage(*args, **kwargs) -> None:
     """Using ba.pushcall will call ba.screenmessage"""
 
-    ba.pushcall(ba.Call(ba.screenmessage, *args, **kwargs), from_other_thread=True)
+    from_other_thread = threading.current_thread().name != 'MainThread'
+    ba.pushcall(ba.Call(ba.screenmessage, *args, **kwargs), from_other_thread=from_other_thread)
 
 
 @rollback_on_error
@@ -234,5 +237,5 @@ def check_installation() -> None:
 class Plugin(ba.Plugin):
     @rollback_on_error
     def on_app_launch(self) -> None:
-        thread = Thread(target=check_installation)
+        thread = threading.Thread(target=check_installation)
         thread.start()
