@@ -17,7 +17,8 @@
   "147.78.64.240": {"group": "Russia Mafia"},
   "176.197.230.40": {"name": "Kemerovo FFA TEST (Dev_RU)"},
   "78.129.234.147": {"name": "Tel Aviv"},
-  "23.88.71.243": {"name": "Hype Server"},
+  "23.88.71.243": {"group": "Hype"},
+  "142.132.154.110": {"group": "Hype"},
   "130.162.230.221": {"group": "BCS"},
   "144.24.111.48": {"group": "BCS"}
 }
